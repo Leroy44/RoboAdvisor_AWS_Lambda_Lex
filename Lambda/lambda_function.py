@@ -111,6 +111,41 @@ In this section, you will create an Amazon Lambda function that will validate th
 
 """
 
+def validate_data(age, investment_amount, intent_request):
+    age = get_slots(intent_request)["age"]
+    investment_amount = get_slots(intent_request)["investmentAmount"]
+    risk_level = get_slots(intent_request)["riskLevel"]
+    if age is not None:
+        age = parse_int(
+            age
+        )
+        if age <= 0: 
+            return build_validation_result(
+                False, 
+                "age",
+                "Your age must be greater than zero."
+                "Please provide a valid age.",
+            ) 
+        if age >= 65: 
+            return build_validation_result(
+                False, 
+                "age", 
+                "You are past retirement age."
+                "This portfolio may not be suitable for you.",
+            )
+         
+    if investment_amount is not None:
+        investment_amount = parse_int(
+            investment_amount
+        )
+        if investment_amount < 5000:
+            return build_validation_result(
+                False, 
+                "investmentAmount",
+                "You will need to invest a minumum of $5000 USD."
+                "Please enter a valid investment amount.",
+            )
+    return build_validation_result(True, None, None)
 
 ### Intents Handlers ###
 def recommend_portfolio(intent_request):
@@ -123,8 +158,68 @@ def recommend_portfolio(intent_request):
     investment_amount = get_slots(intent_request)["investmentAmount"]
     risk_level = get_slots(intent_request)["riskLevel"]
     source = intent_request["invocationSource"]
+    
+    if source == "DialogCodeHook": 
+        slots = get_slots(intent_request)
+        
+        validation_result = validate_data(age, investment_amount, intent_request)
+        
+        if not validation_result["isValid"]: 
+            slots[validation_result["violatedSlot"]] = None
+            
+            return elicit_slot(
+                intent_request["sessionAttributes"],
+                intent_request["currentIntent"]["name"],
+                slots, 
+                validation_result["violatedSlot"],
+                validation_result["message"],
+            )
+        output_session_attributes = intent_request["sessionAttributes"]
+        
+        return delegate(output_session_attributes, get_slots(intent_request))
+    
+    if risk_level is not None: 
+        if risk_level == "None" or "none": 
+            return close(
+                intent_request["sessionAttributes"],
+                "Fulfilled",
+                { 
+                    "contentType": "PlainText",
+                    "content": "We recommend a portfolio mix of 100% bonds (AGG), 0% equities (SPY)." 
+                   
+                }
+            )
+        elif risk_level == "low" or "Low":
+            return close(
+                intent_request["sessionAttributes"],
+                "Fulfilled",
+                { 
+                    "contentType": "PlainText",
+                    "content": "We recommend a portfolio mix of 60% bonds (AGG), 40% equities (SPY)." 
+                   
+                }
+            )
+        elif risk_level == "medium" or "Medium": 
+            return close(
+                intent_request["sessionAttributes"],
+                "Fulfilled",
+                { 
+                    "contentType": "PlainText",
+                    "content": "We recommend a portfolio mix of 40%  bonds (AGG), 60% equities (SPY)." 
+                   
+                }
+            )
+        elif risk_level == "high" or "High":
+            return close(
+                intent_request["sessionAttributes"],
+                "Fulfilled",
+                { 
+                    "contentType": "PlainText",
+                    "content": "We recommend a portfolio mix of 20%  bonds (AGG), 80% equities (SPY)." 
+                   
+                }
+            )
 
-    # YOUR CODE GOES HERE!
 
 
 ### Intents Dispatcher ###
