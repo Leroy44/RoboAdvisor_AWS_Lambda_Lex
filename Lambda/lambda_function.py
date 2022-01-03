@@ -1,10 +1,6 @@
 ### Required Libraries ###
 from datetime import datetime
 from dateutil.relativedelta import relativedelta
-import logging
-
-logger = logging.getLogger()
-logger.setLevel(logging.DEBUG)
 
 ### Functionality Helper Functions ###
 def parse_int(n):
@@ -187,43 +183,29 @@ def recommend_portfolio(intent_request):
             return close(
                 intent_request["sessionAttributes"],
                 "Fulfilled",
-                { 
-                    "contentType": "PlainText",
-                    "content": "We recommend a portfolio mix of 100% bonds (AGG), 0% equities (SPY)." 
-                   
-                }
+                {"contentType": "PlainText", "content": "We recommend a portfolio mix of 100% bonds (AGG), 0% equities (SPY)."}
             )
+        
         elif risk_level == "low" or "Low":
             return close(
                 intent_request["sessionAttributes"],
                 "Fulfilled",
-                { 
-                    "contentType": "PlainText",
-                    "content": "We recommend a portfolio mix of 60% bonds (AGG), 40% equities (SPY)." 
-                   
-                }
+                {"contentType": "PlainText", "content": "We recommend a portfolio mix of 60% bonds (AGG), 40% equities (SPY)."}
             )
+        
         elif risk_level == "medium" or "Medium": 
             return close(
                 intent_request["sessionAttributes"],
                 "Fulfilled",
-                { 
-                    "contentType": "PlainText",
-                    "content": "We recommend a portfolio mix of 40%  bonds (AGG), 60% equities (SPY)." 
-                   
-                }
+                {"contentType": "PlainText", "content": "We recommend a portfolio mix of 40%  bonds (AGG), 60% equities (SPY)."}
             )
+        
         elif risk_level == "high" or "High":
             return close(
                 intent_request["sessionAttributes"],
                 "Fulfilled",
-                { 
-                    "contentType": "PlainText",
-                    "content": "We recommend a portfolio mix of 20%  bonds (AGG), 80% equities (SPY)." 
-                   
-                }
+                {"contentType": "PlainText", "content": "We recommend a portfolio mix of 20%  bonds (AGG), 80% equities (SPY)."}
             )
-
 
 
 ### Intents Dispatcher ###
