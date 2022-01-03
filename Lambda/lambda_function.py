@@ -1,6 +1,10 @@
 ### Required Libraries ###
 from datetime import datetime
 from dateutil.relativedelta import relativedelta
+import logging
+
+logger = logging.getLogger()
+logger.setLevel(logging.DEBUG)
 
 ### Functionality Helper Functions ###
 def parse_int(n):
